@@ -1,0 +1,737 @@
+/* ------------------------------------------- */
+/* --- 1. Variables de Diseño (Paleta Nueva) --- */
+/* ------------------------------------------- */
+:root {
+    /* COLORES PRINCIPALES (Basados en la imagen) */
+    --color-primario: #000077;          /* AZUL OSCURO (60% | 25%) - Para botones y acentos importantes */
+    --color-primario-hover: #00004c;    /* AZUL OSCURO más intenso (ajustado para hover) */
+    --color-secundario: #4D4D51;        /* GRIS (5%) - Para texto principal */
+    --color-secundario-hover: #3a3a3d;  /* GRIS más oscuro para hover */
+
+    /* COLORES DE APOYO (Basados en la imagen) */
+    --color-acento-claro: #1367FF;      /* CELESTE (10%) - Para sidebar active, botones de acento */
+    --color-acento-aqua: #06CCCC;       /* AQUA (5%) - Para estados "Resuelto" o éxito */
+    --color-acento-naranja: #FC7000;    /* NARANJA (5%) - Para estados "Pendiente" o urgencia */
+    
+    /* COLORES DE ESTADO y BASE */
+    --color-fondo: #f0f0f5;             /* Gris muy claro (para el fondo general) */
+    --color-tarjeta: #ffffff;           /* BLANCO (#FFFFFF) */
+    --color-texto: #333;
+    --color-texto-sidebar: #ffffff;     /* Texto de sidebar en blanco */
+    --color-peligro: #e74c3c;           /* Rojo estándar para peligro/eliminar */
+
+    /* PROPIEDADES DE DISEÑO (Se mantienen suaves) */
+    --sombra-tarjeta: 0 4px 20px rgba(0,0,0,0.05);
+    --sombra-tarjeta-hover: 0 8px 30px rgba(0,0,0,0.1);
+    --sombra-boton: 0 4px 12px rgba(0, 0, 119, 0.3); /* Sombra ajustada al nuevo primario */
+    --radio-borde: 8px;                 /* Bordes redondeados consistentes (soft) */
+    --transicion: all 0.3s ease;        /* Transición estándar */
+}
+
+/* ----------------------------- */
+/* --- 2. Estilos Generales --- */
+/* ----------------------------- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    overflow-x: hidden;
+}
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ------------------------------------- */
+/* --- 3. Barra Lateral (Navegación) --- */
+/* ------------------------------------- */
+.sidebar {
+    width: 250px;
+    background-color: var(--color-primario); /* AZUL OSCURO */
+    color: var(--color-texto-sidebar);
+    padding: 25px 20px;
+    flex-shrink: 0;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+    z-index: 10;
+    transition: var(--transicion); /* Añadido para transición suave */
+}
+.sidebar h2 {
+    margin: 0 0 30px 0;
+    text-align: center;
+    color: var(--color-texto-sidebar);
+    font-weight: 700;
+    letter-spacing: 1px;
+    /* Asegura que el H2 mantenga la altura durante la transición */
+    height: 35px;
+    overflow: hidden; 
+}
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}
+.sidebar nav li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 15px;
+    margin: 8px 0;
+    border-radius: var(--radio-borde);
+    cursor: pointer;
+    transition: var(--transicion);
+    font-weight: 500;
+    /* Evita que el texto se parta en dos líneas durante la transición */
+    white-space: nowrap; 
+}
+.sidebar nav li .material-icons-outlined {
+    font-size: 22px;
+    min-width: 24px; /* Asegura alineación cuando está colapsado */
+}
+.sidebar nav li:hover {
+    background-color: var(--color-primario-hover); /* AZUL OSCURO Hover */
+    transform: translateX(5px);
+}
+.sidebar nav li.active {
+    background-color: var(--color-acento-claro); /* CELESTE */
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 4px 12px rgba(19, 103, 255, 0.4); /* Sombra ajustada al celeste */
+}
+
+/* ----------------------------------------- */
+/* --- 4. Área de Contenido Principal (Main) --- */
+/* ----------------------------------------- */
+.main-content {
+    flex-grow: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+    transition: var(--transicion); /* Añadido para transición suave */
+}
+header {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+header h1 {
+    margin: 0;
+    color: var(--color-secundario);
+    font-weight: 700;
+}
+
+/* --- Ocultar/Mostrar Páginas --- */
+.page-content {
+    display: none; /* Oculto por defecto */
+    animation: fadeIn 0.5s ease; /* Animación de entrada */
+}
+.page-content.active {
+    display: block; /* Visible */
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------------------------------------------- */
+/* --- 5. Estilos de Tarjetas (Tasks, Forms, etc.) --- */
+/* ---------------------------------------------- */
+.card {
+    background-color: var(--color-tarjeta);
+    border-radius: var(--radio-borde);
+    box-shadow: var(--sombra-tarjeta);
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: var(--transicion);
+}
+.card:hover {
+    box-shadow: var(--sombra-tarjeta-hover);
+    transform: translateY(-5px);
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+.card-header h3 {
+    margin: 0;
+    color: var(--color-primario); /* AZUL OSCURO para títulos */
+}
+.status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.status-pendiente { 
+    background-color: #ffe8d1; /* Naranja muy suave */
+    color: var(--color-acento-naranja); /* NARANJA */ 
+}
+.status-asignada { 
+    background-color: #dbeaff; /* Celeste muy suave */
+    color: var(--color-acento-claro); /* CELESTE */ 
+}
+.status-resuelta { 
+    background-color: #e0fff9; /* Aqua muy suave */
+    color: var(--color-acento-aqua); /* AQUA */ 
+}
+
+.task-details p {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+.task-details strong {
+    color: #555;
+    min-width: 100px;
+    display: inline-block;
+}
+
+/* ----------------------------------------- */
+/* --- 6. Estilos de Formularios Mejorados --- */
+/* ----------------------------------------- */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="datetime-local"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-sizing: border-box; 
+    font-size: 1em;
+    transition: var(--transicion);
+}
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+.form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-acento-claro); /* CELESTE para el foco */
+    box-shadow: 0 0 0 3px rgba(19, 103, 255, 0.2);
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.form-radio-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+.form-radio-group label {
+    font-weight: normal;
+}
+.form-radio-group input[type="radio"] {
+    margin-right: 5px;
+}
+
+/* ---------------------------------- */
+/* --- 7. Botones Mejorados --- */
+/* ---------------------------------- */
+.button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: var(--transicion);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.button-primary {
+    background-color: var(--color-primario);
+    color: white;
+    box-shadow: var(--sombra-boton);
+}
+.button-primary:hover {
+    background-color: var(--color-primario-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 119, 0.4); /* Sombra ajustada al nuevo primario */
+}
+.button-secondary {
+    background-color: #bdc3c7;
+    color: #333;
+}
+.button-secondary:hover {
+    background-color: #95a5a6;
+    transform: translateY(-2px);
+}
+.button-danger {
+    background-color: var(--color-peligro);
+    color: white;
+}
+.button-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+.button:active {
+    transform: scale(0.98);
+}
+
+/* --------------------------------------------- */
+/* --- 8. Tarjetas de Estadísticas (Dashboard) --- */
+/* --------------------------------------------- */
+.stat-card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+}
+.stat-card {
+    background-color: var(--color-tarjeta);
+    padding: 20px;
+    border-radius: var(--radio-borde);
+    box-shadow: var(--sombra-tarjeta);
+    border-left: 5px solid var(--color-acento-aqua); /* Por defecto AQUA para visibilidad */
+    transition: var(--transicion);
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-tarjeta-hover);
+}
+.stat-card.blue { border-color: var(--color-acento-claro); } /* CELESTE */
+.stat-card.yellow { border-color: var(--color-acento-naranja); } /* NARANJA */
+.stat-card h4 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #555;
+    font-weight: 600;
+}
+.stat-card p {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin: 10px 0 0 0;
+    color: var(--color-primario); /* AZUL OSCURO para los números grandes */
+}
+
+/* -------------------------------- */
+/* --- 9. Tabla de Clientes --- */
+/* -------------------------------- */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.data-table th, .data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e9ecef;
+    text-align: left;
+}
+.data-table th {
+    background-color: var(--color-fondo);
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+.data-table tr:hover {
+    background-color: #fdfdfd;
+}
+.data-table .actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ----------------------------------- */
+/* --- 10. Vista de Calendario (Placeholder) --- */
+/* ----------------------------------- */
+.calendar-placeholder {
+    width: 100%;
+    height: 450px;
+    background-color: #fdfdfd;
+    border: 2px dashed #ced4da;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #7f8c8d;
+    font-size: 1.2em;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* ----------------------------------------------- */
+/* --- 11. Estilos de la sección "Generar Acta" --- */
+/* ----------------------------------------------- */
+.articles-list .article-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+.articles-list .article-item:last-child {
+    border-bottom: none;
+}
+.articles-list .article-item p {
+    flex: 1;
+    margin: 0;
+    min-width: 200px;
+}
+.articles-list .article-item input[type="number"] {
+    width: 80px;
+    text-align: center;
+    margin-left: auto;
+}
+.articles-list .article-item button {
+    background-color: var(--color-peligro);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.signature-area {
+    width: 100%;
+    height: 150px;
+    border: 2px dashed #ced4da;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #777;
+    font-style: italic;
+    border-radius: var(--radio-borde);
+    background-color: #fdfdfd;
+}
+.signature-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+.image-gallery img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+/* ------------------------------------ */
+/* --- 12. ESTILOS DE LA VENTANA MODAL --- */
+/* ------------------------------------ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 100;
+    display: none; /* Oculto por defecto */
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+.modal-content {
+    background-color: var(--color-tarjeta);
+    padding: 30px;
+    border-radius: var(--radio-borde);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    animation: slideIn 0.4s ease;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+.modal-header h2 {
+    margin: 0;
+    color: var(--color-secundario);
+}
+.modal-close {
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+.modal-close:hover {
+    color: #333;
+    transform: rotate(90deg);
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------ */
+/* --- 13. ESTILOS DE MENÚ COLAPSABLE (ESCRITORIO) --- */
+/* ------------------------------------ */
+
+/* Botón de toggle de escritorio (se ocultará en móvil) */
+#toggle-sidebar-btn {
+    transition: all 0.3s ease;
+}
+
+/* Estado del contenedor cuando el menú está colapsado */
+.container.sidebar-collapsed .sidebar {
+    width: 70px; /* Ancho más pequeño para íconos */
+    padding: 25px 0px; /* Reducir padding horizontal */
+}
+
+/* 1. OCULTAR TEXTO DEL TÍTULO Y LOS ÍTEMS DEL MENÚ */
+.container.sidebar-collapsed #sidebar-logo,
+.container.sidebar-collapsed #sidebar-title,
+.container.sidebar-collapsed .sidebar nav li span:not(.material-icons-outlined) {
+    display: none !important;
+}
+
+/* 2. CENTRAR ÍCONOS DE LA BARRA LATERAL COLAPSADA */
+.container.sidebar-collapsed .sidebar nav li {
+    justify-content: center; /* Centra los íconos */
+    padding: 14px 0px; 
+    margin: 8px auto; /* Centrar el li completo */
+    width: 50px; /* Darle un ancho fijo para centrar */
+}
+.container.sidebar-collapsed .sidebar nav li .material-icons-outlined {
+    margin: 0;
+}
+.container.sidebar-collapsed .sidebar h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.container.sidebar-collapsed .sidebar nav li:hover {
+    transform: translateX(0); /* Evita el movimiento de 5px al estar colapsado */
+}
+
+/* 3. Ajustar posición del botón y el contenido */
+/* ¡¡¡REGLA ELIMINADA!!! Ya no usamos "margin-left: -180px" */
+/* El layout Flexbox se encarga de esto automáticamente */
+
+.container.sidebar-collapsed #toggle-sidebar-btn {
+    left: 90px; 
+}
+.container.sidebar-collapsed #toggle-sidebar-btn .material-icons-outlined {
+    /* Cambia el ícono (ya no usa ::before) */
+    content: 'menu';
+}
+
+
+/* ------------------------------------ */
+/* --- 14. MEDIA QUERY PARA MÓVILES (ej: 768px o menos) --- */
+/* ------------------------------------ */
+
+.mobile-header {
+    display: none; /* Oculto en desktop */
+    padding: 15px 20px;
+    background-color: var(--color-tarjeta);
+    border-bottom: 1px solid #eee;
+    position: sticky; /* Se mantiene fijo al hacer scroll */
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+#menu-toggle-btn {
+    font-size: 28px;
+    color: var(--color-primario);
+    cursor: pointer;
+    transition: var(--transicion);
+}
+#menu-toggle-btn:hover {
+    color: var(--color-primario-hover);
+}
+
+@media (max-width: 768px) {
+    
+    /* 1. Ocultar el botón de toggle de ESCRITORIO */
+    #toggle-sidebar-btn {
+        display: none !important;
+    }
+    
+    /* 2. Mostrar la cabecera móvil */
+    .mobile-header {
+        display: block; 
+    }
+
+    /* 3. Estilos del sidebar móvil (off-canvas) */
+    .sidebar {
+        position: fixed; 
+        height: 100vh;
+        z-index: 200;
+        /* Oculto por defecto */
+        transform: translateX(-100%); 
+        transition: transform 0.3s ease-out;
+    }
+
+    .sidebar.open {
+        transform: translateX(0); /* Clase 'open' lo hace visible */
+    }
+
+    /* 4. Ajustes de contenido */
+    .main-content {
+        padding: 0; /* Quitamos padding del main */
+    }
+    
+    .page-content {
+        padding: 20px;
+    }
+    
+    header {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+
+    .stat-card p {
+        font-size: 2.0em;
+    }
+}
+/* ------------------------------------ */
+/* --- 15. ESTILOS DEL CALENDARIO --- */
+/* ------------------------------------ */
+
+#calendar-table {
+    table-layout: fixed; /* Asegura columnas de igual ancho */
+    border: 1px solid #eee;
+}
+
+#calendar-table th {
+    text-align: center;
+    background-color: var(--color-fondo);
+    padding: 10px 5px;
+    font-size: 0.9em;
+}
+
+#calendar-table td {
+    height: 100px; /* Altura de las celdas */
+    vertical-align: top;
+    padding: 5px;
+    border: 1px solid #eee;
+    position: relative; /* Para posicionar el número del día */
+    font-size: 0.85em;
+    overflow: hidden; /* Evita que el contenido desborde */
+}
+
+/* Estilo para días fuera del mes actual */
+#calendar-table td.outside-month {
+    background-color: #f9f9f9;
+    color: #ccc;
+}
+#calendar-table td.outside-month .day-number {
+    color: #ccc;
+}
+
+/* Número del día */
+.day-number {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-weight: bold;
+    color: #999;
+}
+
+/* Estilo para las tareas dentro del calendario */
+.calendar-task {
+    background-color: var(--color-primario-hover); /* Azul oscuro suave */
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+    font-size: 0.9em;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Añade ... si el texto es muy largo */
+    transition: background-color 0.2s ease;
+}
+
+.calendar-task:hover {
+    background-color: var(--color-acento-claro); /* Celeste al pasar el mouse */
+}
+
+/* Clases de estado/actividad para tareas en calendario */
+.task-preventivo { background-color: #ffe8cc; color: #fa8c16; border-left: 3px solid #fa8c16;}
+.task-correctivo { background-color: #ffdcdc; color: #f5222d; border-left: 3px solid #f5222d;}
+.task-instalacion { background-color: #d9f7be; color: #52c41a; border-left: 3px solid #52c41a;}
+/* Añade más clases si necesitas diferenciar por actividad */
+
+/* ----------------------------------------- */
+/* --- 16. ESTILOS MODAL DETALLES TAREA --- */
+/* ----------------------------------------- */
+.task-details-modal p {
+    margin: 12px 0;
+    line-height: 1.6;
+    display: flex; /* Para alinear ícono y texto si los añades */
+    align-items: center;
+}
+.task-details-modal p strong {
+    min-width: 120px; /* Ajusta según necesidad */
+    display: inline-block;
+    color: #555;
+    margin-right: 10px;
+}
+/* Reutilizar estilos de status */
+#modal-task-body .status {
+    display: inline-block; /* Asegura que se vea como etiqueta */
+    padding: 3px 10px;
+    font-size: 0.9em;
+    margin-left: 5px; /* Pequeño espacio */
+}
+/* Colores específicos para el modal (puedes ajustar) */
+#modal-task-actividad.Preventivo { background-color: #ffe8cc; color: #fa8c16;}
+#modal-task-estado.Programado { background-color: #d6e4ff; color: #2f54eb;}
+#modal-task-prioridad.Media { background-color: #fffbe6; color: #faad14;}
+/* Añade más estilos de estado/prioridad según necesites */
+
+/* ------------------------------------ */
+/* --- 17. ESTILOS PANTALLA DE LOGIN --- */
+/* ------------------------------------ */
+#login-screen {
+    display: flex; /* Centrar contenido */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ocupar toda la pantalla */
+    background-color: var(--color-fondo);
+    position: fixed; /* Asegura que cubra todo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 500; /* Por encima de todo */
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-card h2 {
+    margin-bottom: 25px;
+    color: var(--color-primario);
+}
+
+.login-card .form-group label {
+    text-align: left;
+}

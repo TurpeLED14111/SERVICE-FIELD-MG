@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Gestor Post Venta </title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/styles.css"> 
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-card card">
+             <img src="images/2_Logo_SISA_Vcards.png" alt="Logo SISA" style="height: 50px; display: block; margin: 0 auto 20px;">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form" onsubmit="event.preventDefault(); login();">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" required placeholder="admin o usuario">
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" required placeholder="12345">
+                </div>
+                <p id="login-error" style="color: var(--color-peligro); display: none; margin-top: 10px;">Credenciales incorrectas.</p>
+                <button type="submit" class="button button-primary" style="width: 100%; margin-top: 20px;">Ingresar</button>
+            </form>
+        </div>
+    </div>
+    <div class="container" style="display: none;"> 
+        <aside class="sidebar">
+            <h2>
+                <img id="sidebar-logo" src="images/2_Logo_SISA_Vcards.png" alt="Logo SISA" style="height: 35px; vertical-align: middle; margin-right: 10px;">
+                <span id="sidebar-title"> SISA </span>
+            </h2>            
+            <nav>
+                <ul>
+                    <li id="nav-dashboard" class="active" onclick="showPage('page-dashboard', this)">
+                        <span class="material-icons-outlined">dashboard</span><span>Dashboard</span>
+                    </li>
+                    <li id="nav-programar" onclick="showPage('page-programar', this)">
+                        <span class="material-icons-outlined">calendar_today</span><span>Programar Tarea</span>
+                    </li>
+                    <li id="nav-mistareas" onclick="showPage('page-mistareas', this)">
+                        <span class="material-icons-outlined">assignment_turned_in</span><span>Mis Tareas</span>
+                    </li>
+                    <li id="nav-clientes" onclick="showPage('page-clientes', this)">
+                        <span class="material-icons-outlined">groups</span><span>Clientes</span>
+                    </li>
+                    <li id="nav-perfil" onclick="showPage('page-perfil', this)">
+                        <span class="material-icons-outlined">account_circle</span><span>Perfil</span>
+                    </li>
+                    <li onclick="logout()"> 
+                        <span class="material-icons-outlined">logout</span><span>Cerrar Sesión</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            
+            <button id="toggle-sidebar-btn" class="button button-secondary" style="margin-bottom: 20px; position: fixed; top: 20px; left: 270px; z-index: 20; padding: 8px 12px;">
+                <span class="material-icons-outlined">menu_open</span>
+            </button>
+            
+            <div class="mobile-header">
+                <span class="material-icons-outlined" id="menu-toggle-btn">
+                    menu
+                </span>
+            </div>
+
+            <section id="page-dashboard" class="page-content active"> 
+                <header>
+                    <h1>Dashboard</h1>
+                </header>
+                 <div class="stat-card-container">
+                    <div class="stat-card blue">
+                        <h4>Tareas Asignadas (Pendientes)</h4>
+                        <p>12</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Tareas Resueltas (Hoy)</h4>
+                        <p>4</p>
+                    </div>
+                    <div class="stat-card yellow">
+                        <h4>Atenciones Correctivas Urgentes</h4>
+                        <p>2</p>
+                    </div>
+                </div>
+                 <div class="card" style="margin-top: 30px;">
+                    <div class="card-header">
+                        <h3>Resumen de Actividad Reciente</h3>
+                    </div>
+                    <p>...Cargando actividad...</p>
+                </div>
+            </section>
+             <section id="page-programar" class="page-content">
+                 <header>
+                    <h1>Programar Nueva Tarea</h1>
+                </header>
+                 <div class="card" id="pendientes-programar">
+                    <div class="card-header">
+                        <h3>Pendientes de Programar</h3>
+                        <span class="status status-pendiente" id="contador-pendientes">Cargando...</span>
+                    </div>
+                    <div id="lista-pendientes" style="max-height: 200px; overflow-y: auto;">
+                        <p>Cargando tareas pendientes...</p>
+                    </div>
+                </div>
+                 <div class="card">
+                    <div class="card-header">
+                        <h3>1. Revisar Disponibilidad de Ingenieros</h3>
+                    </div>
+                    <div class="calendar-filters form-row">
+                        <div class="form-group">
+                            <label for="calendar-month">Mes:</label>
+                            <input type="month" id="calendar-month" name="calendar-month" onchange="renderCalendar()">
+                        </div>
+                        <div class="form-group">
+                            <label for="calendar-engineer">Ingeniero:</label>
+                            <select id="calendar-engineer" name="calendar-engineer" onchange="renderCalendar()">
+                                <option value="todos">-- Todos --</option>
+                                <option value="ing1">Carlos Mendoza</option>
+                                <option value="ing2">Ana Gutiérrez</option>
+                                <option value="ing3">Luis Torres</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="calendar-container">
+                        <div id="calendar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <button class="button button-secondary" onclick="changeMonth(-1)">&lt; Mes Anterior</button>
+                            <h4 id="calendar-month-year" style="margin: 0;"></h4>
+                            <button class="button button-secondary" onclick="changeMonth(1)">Mes Siguiente &gt;</button>
+                        </div>
+                        <table id="calendar-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Dom</th><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendar-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                 <div class="card" id="card-detalles-asignacion"> 
+                    <div class="card-header">
+                        <h3>2. Detalles de la Asignación</h3>
+                    </div>
+                    <form id="form-asignacion" onsubmit="submitAsignacion(); return false;"> 
+                        <input type="hidden" id="tarea_pendiente_id" name="tarea_pendiente_id">
+                         <div class="form-row" style="align-items: flex-end;">
+                            <div class="form-group" style="flex-grow: 1; margin-bottom: 0;">
+                                <label for="comodato_id">Código CMD (Comodato)</label>
+                                <input type="text" id="comodato_id" name="comodato_id" placeholder="Ej: CMD25001">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <button type="button" class="button button-secondary" onclick="buscarComodato()">Buscar</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <small>Ingrese el código y presione 'Buscar' para autocompletar.</small>
+                        </div>
+                         <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="asig_cliente">Cliente</label>
+                                <input type="text" id="asig_cliente" name="asig_cliente" placeholder="Autocompletado o manual" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="asig_unidad_negocio">Unidad de Negocio</label>
+                                <input type="text" id="asig_unidad_negocio" name="asig_unidad_negocio" placeholder="Autocompletado o manual">
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="asig_ubicacion">Ubicación (Sede/Hospital)</label>
+                                <input type="text" id="asig_ubicacion" name="asig_ubicacion" placeholder="Autocompletado o manual">
+                            </div>
+                            <div class="form-group">
+                                <label for="asig_equipo">Equipo a Intervenir</label>
+                                <select id="asig_equipo" name="asig_equipo" required>
+                                    <option value="">-- Seleccionar Equipo --</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="asig_actividad">Actividad</label>
+                                <select id="asig_actividad" name="asig_actividad" required>
+                                     <option value="">-- Seleccionar Actividad --</option>
+                                    <option value="CORRECTIVO">CORRECTIVO</option>
+                                    <option value="PRESITE">PRESITE</option>
+                                    <option value="PREVENTIVO">PREVENTIVO</option>
+                                    <option value="ALISTAMIENTO">ALISTAMIENTO</option>
+                                    <option value="ENVIVO">ENVIVO</option>
+                                    <option value="INSTALACIÓN">INSTALACIÓN</option>
+                                    <option value="DESINSTALACIÓN">DESINSTALACIÓN</option>
+                                    <option value="ADQUISICIÓN">ADQUISICIÓN</option>
+                                    <option value="RETIRO">RETIRO</option>
+                                    <option value="CAMBIO DE EQUIPO">CAMBIO DE EQUIPO</option>
+                                    <option value="REVISIÓN">REVISIÓN</option>
+                                    <option value="ACTUALIZACIÓN">ACTUALIZACIÓN</option>
+                                    <option value="CAPACITACIÓN">CAPACITACIÓN</option>
+                                    <option value="otros">OTROS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="asig_prioridad">Prioridad</label>
+                                <select id="asig_prioridad" name="asig_prioridad" required>
+                                    <option value="media">Media</option>
+                                    <option value="baja">Baja</option>
+                                    <option value="alta">Alta</option>
+                                    <option value="urgente">Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="asig_fecha_ini">Fecha de Intervención</label>
+                                <input type="date" id="asig_fecha_ini" name="asig_fecha_ini" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="asig_responsable">Responsable (Ingeniero)</label>
+                                <select id="asig_responsable" name="asig_responsable" required> 
+                                    <option value="">-- Seleccionar Ingeniero --</option>
+                                    <option value="ing1">Carlos Mendoza</option>
+                                    <option value="ing2">Ana Gutiérrez</option>
+                                    <option value="ing3">Luis Torres</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label for="asig_descripcion">Descripción / Antecedentes</label>
+                            <textarea id="asig_descripcion" name="asig_descripcion" placeholder="Detallar el trabajo a realizar o el problema reportado..."></textarea>
+                        </div>
+                         <button type="submit" class="button button-primary" style="font-size: 1.1em;">
+                            <span class="material-icons-outlined">send</span>
+                            Asignar Tarea y Notificar
+                        </button>
+                         <button type="button" class="button button-secondary" onclick="limpiarFormularioAsignacion()">Limpiar</button> 
+                    </form>
+                </div>
+            </section>
+             <section id="page-mistareas" class="page-content">
+                  <header>
+                    <h1>Mis Tareas Asignadas</h1>
+                </header>
+                 <div class="card">
+                    <div class="card-header">
+                        <h3>Mantenimiento Preventivo UPS - Cliente A</h3>
+                        <span class="status status-asignada">Asignada</span>
+                    </div>
+                    <div class="task-details">
+                        <p><strong>Cliente:</strong> Cliente S.A.C.</p>
+                        <p><strong>Fecha:</strong> 25 de Octubre, 2025 (9:00 AM - 11:00 AM)</p>
+                        <button class="button button-primary" style="margin-top: 10px;" onclick="showPage('page-generar-acta', document.getElementById('nav-mistareas'))">
+                            <span class="material-icons-outlined">edit_document</span>
+                            Generar Acta / Resolver
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Atención Correctiva - Cliente B</h3>
+                        <span class="status status-resuelta">Resuelta</span>
+                    </div>
+                    <div class="task-details">
+                        <p><strong>Cliente:</strong> Data Center Perú</p>
+                        <p><strong>Fecha:</strong> 23 de Octubre, 2025</p>
+                        <button class="button button-secondary" style="margin-top: 10px;">
+                            <span class="material-icons-outlined">visibility</span>
+                            Ver Acta Resuelta
+                        </button>
+                    </div>
+                </div>
+             </section>
+             <section id="page-generar-acta" class="page-content">
+                  <header>
+                    <h1>Generar Acta de Atención</h1>
+                    <p>Complete los detalles del servicio realizado.</p>
+                </header>
+                 <div class="card">
+                     <div class="card-header">
+                        <h3>Datos de la Atención (Precargados)</h3>
+                        <span class="status status-asignada">Asignada</span>
+                    </div>
+                    <div class="task-details">
+                        <p><strong>Fecha de Atención:</strong> <span id="acta-fecha-atencion"></span></p>
+                        <p><strong>Cliente:</strong> <span id="acta-cliente">IREN - NORTE TRUJILLO</span></p>
+                        <p><strong>Contacto:</strong> <span id="acta-contacto">Juan Pérez</span></p>
+                        <p><strong>Ubicación:</strong> <span id="acta-ubicacion">BANCO DE SANGRE</span></p>
+                        <p><strong>Equipo:</strong> <span id="acta-equipo">ANALIZADOR INMUNOLOGICO</span></p>
+                        <p><strong>Marca:</strong> <span id="acta-marca">ABBOTT</span></p>
+                        <p><strong>Modelo:</strong> <span id="acta-modelo">ARCHITECT I1000SR</span></p>
+                        <p><strong>N° Serie:</strong> <span id="acta-num-serie">I1SR62052</span></p>
+                        <p><strong>Tipo de Servicio:</strong> <span id="acta-tipo-servicio">Mantenimiento Preventivo</span></p>
+                        <p><strong>Antecedentes Iniciales:</strong> <span id="acta-antecedentes">BATERIAS DEL UPS EN MAL ESTADO</span></p>
+                    </div>
+                    <form onsubmit="alert('Acta generada y enviada (simulación)'); return false;" style="margin-top: 20px;">
+                         <div class="form-group">
+                            <label for="acciones_realizadas">Acciones Realizadas por el Ingeniero</label>
+                            <textarea id="acciones_realizadas" name="acciones_realizadas" placeholder="Describa el trabajo realizado..." required></textarea>
+                         </div>
+                         <div class="form-group">
+                            <label>Estado Final del Equipo</label>
+                            <div class="form-radio-group">
+                                 <input type="radio" id="estado_operativo" name="estado_final" value="operativo" required>
+                                <label for="estado_operativo">Operativo</label>
+                                <input type="radio" id="estado_inoperativo" name="estado_final" value="inoperativo">
+                                <label for="estado_inoperativo">Inoperativo</label>
+                                <input type="radio" id="estado_observacion" name="estado_final" value="observacion">
+                                <label for="estado_observacion">Con Observaciones</label>
+                            </div>
+                         </div>
+                         <div class="form-group">
+                            <label for="observaciones_recomendaciones">Observaciones</label>
+                            <textarea id="observaciones_recomendaciones" name="observaciones_recomendaciones"></textarea>
+                         </div>
+                         <hr>
+                         <h3>Artículos Empleados</h3>
+                         <div class="form-group">
+                            <label>Escanear Código</label>
+                            <div id="reader" style="width: 100%; max-width: 500px; border: 1px solid #ccc; border-radius: 8px;"></div>
+                            <button type="button" class="button button-primary" id="start-scan-btn" style="margin-top: 10px;">
+                                 <span class="material-icons-outlined">qr_code_scanner</span> Iniciar Escáner
+                            </button>
+                         </div>
+                         <div class="articles-list"></div>
+                         <button type="button" class="button button-secondary" style="margin-top: 15px;" onclick="openModal('modal-add-article')">
+                              <span class="material-icons-outlined">add</span> Añadir Artículo Manualmente
+                         </button>
+                         <hr>
+                         <h3>Evidencia Fotográfica</h3>
+                         <div class="form-group">
+                            <label for="fotos_evidencia">Adjuntar Fotos</label>
+                            <input type="file" id="fotos_evidencia" name="fotos_evidencia" accept="image/*" multiple>
+                             <small>Sube imágenes que evidencien el trabajo.</small>
+                         </div>
+                         <div class="image-gallery"></div>
+                         <hr>
+                         <h3>Firmas Digitales</h3>
+                         <div class="form-group">
+                            <label>Firma del Cliente</label>
+                            <div class="signature-area" id="firma_cliente_area">[ Canvas Firma ]</div>
+                            <div class="signature-buttons">
+                                <button type="button" class="button button-secondary">Limpiar Firma</button>
+                                <button type="button" class="button button-secondary">Guardar Firma</button>
+                            </div>
+                         </div>
+                         <div class="form-group">
+                            <label>Firma del Ingeniero</label>
+                            <div class="signature-area" id="firma_ingeniero_area">
+                                 <img src="https://via.placeholder.com/150x80?text=Firma+Ingeniero" alt="Firma del Ingeniero" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            </div>
+                         </div>
+                         <div class="form-group" style="margin-top: 30px;">
+                            <button type="submit" class="button button-primary" style="padding: 15px 30px; font-size: 1.1em;">
+                                 <span class="material-icons-outlined">check_circle</span> Finalizar Acta
+                            </button>
+                            <button type="button" class="button button-secondary" onclick="showPage('page-mistareas', document.getElementById('nav-mistareas'))">Cancelar</button>
+                         </div>
+                    </form>
+                 </div>
+             </section>
+             <section id="page-clientes" class="page-content">
+                 <header>
+                    <h1>Gestión de Clientes</h1>
+                </header>
+                 <button class="button button-primary" style="margin-bottom: 20px;" onclick="openModal('modal-nuevo-cliente')">
+                     <span class="material-icons-outlined">add_business</span> Añadir Cliente
+                 </button>
+                 <div class="card">
+                     <div class="card-header"><h3>Lista de Clientes</h3></div>
+                     <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre Cliente</th><th>Contacto</th><th>Teléfono</th><th>Acciones</th>
+                            </tr>
+                        </thead>
+                         <tbody>
+                            <tr>
+                                <td>Cliente S.A.C.</td><td>Juan Pérez</td><td>987654321</td>
+                                <td class="actions"><button class="button button-secondary"><span class="material-icons-outlined">edit</span></button></td>
+                            </tr>
+                            <tr>
+                                <td>Data Center Perú</td><td>Ana Gutiérrez</td><td>912345678</td>
+                                <td class="actions"><button class="button button-secondary"><span class="material-icons-outlined">edit</span></button></td>
+                            </tr>
+                         </tbody>
+                     </table>
+                 </div>
+             </section>
+             <section id="page-perfil" class="page-content">
+                  <header>
+                    <h1>Mi Perfil</h1>
+                </header>
+                 <div class="card">
+                   <div class="card-header"><h3>Información Personal</h3></div>
+                   <form onsubmit="alert('Perfil actualizado'); return false;">
+                         <div class="form-group">
+                            <label for="perfil_nombre">Nombre Completo</label>
+                            <input type="text" id="perfil_nombre" value="Carlos Mendoza">
+                         </div>
+                         <div class="form-group">
+                            <label for="perfil_email">Email</label>
+                            <input type="email" id="perfil_email" value="carlos.mendoza@empresa.com" disabled>
+                         </div>
+                         <div class="form-group">
+                            <label for="perfil_firma_upload">Actualizar Firma</label>
+                            <input type="file" id="perfil_firma_upload" accept="image/png, image/jpeg">
+                            <small>Firma actual:</small>
+                            <div class="signature-area" style="height: 100px; width: 200px; margin-left: 0; background-color: #fff;">
+                                 <img src="https://via.placeholder.com/150x80?text=Firma+Actual" alt="Firma Actual" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            </div>
+                         </div>
+                        <button type="submit" class="button button-primary">
+                            <span class="material-icons-outlined">save</span> Guardar Cambios
+                        </button>
+                   </form>
+                 </div>
+             </section>
+            </main> 
+        </div> 
+    
+    <div id="modal-nuevo-cliente" class="modal-overlay" onclick="closeModal('modal-nuevo-cliente')">
+         <div class="modal-content" onclick="event.stopPropagation();">
+            <div class="modal-header"><h2>Añadir Nuevo Cliente</h2><span class="modal-close" onclick="closeModal('modal-nuevo-cliente')">&times;</span></div>
+            <form id="form-nuevo-cliente" onsubmit="event.preventDefault(); submitNuevoCliente();">
+                 <div class="form-group"><label>Nombre Cliente</label><input type="text" id="cliente_nombre" required></div>
+                 <div class="form-group"><label>Contacto</label><input type="text" id="cliente_contacto" required></div>
+                 <div class="form-row">
+                     <div class="form-group"><label>Email</label><input type="email" id="cliente_email"></div>
+                     <div class="form-group"><label>Teléfono</label><input type="text" id="cliente_telefono" required></div>
+                 </div>
+                 <div class="form-group"><label>Dirección</label><input type="text" id="cliente_direccion"></div>
+                 <div style="text-align: right; margin-top: 30px;">
+                     <button type="button" class="button button-secondary" onclick="closeModal('modal-nuevo-cliente')">Cancelar</button>
+                    <button type="submit" class="button button-primary">Guardar Cliente</button>
+                 </div>
+            </form>
+         </div>
+    </div>
+    <div id="modal-add-article" class="modal-overlay" onclick="closeModal('modal-add-article')">
+         <div class="modal-content" onclick="event.stopPropagation();">
+            <div class="modal-header"><h2>Añadir Artículo Manualmente</h2><span class="modal-close" onclick="closeModal('modal-add-article')">&times;</span></div>
+            <form id="form-add-article" onsubmit="event.preventDefault(); submitArticuloManual();">
+                 <div class="form-group"><label>Buscar Descripción</label><input type="text" id="manual_descripcion" onkeyup="filtrarCodigosPorDescripcion()"></div>
+                 <div class="form-group"><label>Código Repuesto</label><select id="manual_codigo" required onchange="actualizarDescripcionPorCodigo()"><option>...</option></select></div>
+                 <div class="form-group"><label>Cantidad</label><input type="number" id="manual_cantidad" value="1" min="1" required></div>
+                 <div style="text-align: right;"><button type="button">Cancelar</button><button type="submit">Guardar</button></div>
+            </form>
+         </div>
+    </div>
+     <div id="modal-task-details" class="modal-overlay" onclick="closeModal('modal-task-details')">
+        <div class="modal-content task-details-modal" onclick="event.stopPropagation();">
+            <div class="modal-header"><h2>Detalles Tarea</h2><span class="modal-close" onclick="closeModal('modal-task-details')">&times;</span></div>
+            <div id="modal-task-body">
+                <p><strong>U. Negocio:</strong> <span id="modal-task-unegocio"></span></p>
+                <p><strong>Actividad:</strong> <span id="modal-task-actividad" class="status"></span></p>
+                <p><strong>Ubicación:</strong> <span id="modal-task-ubicacion"></span></p>
+                <p><strong>Cliente:</strong> <span id="modal-task-cliente"></span></p>
+                <p><strong>Responsable(s):</strong> <span id="modal-task-responsables"></span></p>
+                <p><strong>Estado:</strong> <span id="modal-task-estado" class="status"></span></p>
+                <p><strong>Fecha Inicio:</strong> <span id="modal-task-fechaini"></span></p>
+                <p><strong>Prioridad:</strong> <span id="modal-task-prioridad" class="status"></span></p>
+                <p><strong>Descripción:</strong> <span id="modal-task-descripcion"></span></p>
+            </div>
+        </div>
+     </div>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="js/script.js"></script> 
+
+</body>
+</html>
